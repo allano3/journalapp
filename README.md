@@ -51,6 +51,11 @@ from any HTTPS origin and set `VITE_BASE` to the path it lives under.
 Storage in this mode is the same IndexedDB backend as the browser (see the table
 below). Three things to know:
 
+- **Moving the journal between phone and desktop:** Settings → *Create backup* on the
+  source device, then *Restore backup* on the other. On a phone the backup opens the
+  system share sheet, so AirDrop (or Files, Mail, etc.) is one tap; on a desktop it is a
+  normal download that you can AirDrop from the Downloads folder. The file is encrypted
+  with your passphrase, so the transfer channel does not matter.
 - Storage is per origin **and** per container. On iOS the home-screen app has its own
   IndexedDB separate from the Safari tab; on Android, Chrome and the installed app share
   one profile. To move writing between containers use **Encrypted backup → Restore**.

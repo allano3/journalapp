@@ -267,8 +267,10 @@ export function exportJson(j: Journal): JournalExport {
 }
 
 /**
- * Hand bytes to the platform as a file. Browser: Blob + anchor download. Tauri: native
- * save dialog (the webview has no download handler). Resolves false when the user cancels.
+ * Hand bytes to the platform as a file. Tauri: native save dialog. Phones (installed
+ * PWA or mobile browser): the system share sheet via the Web Share API, which is the
+ * only reliable way out of a home-screen web app on iOS and puts AirDrop one tap away.
+ * Otherwise: Blob + anchor download. Resolves false when the user cancels.
  */
 export async function downloadBytes(name: string, bytes: Uint8Array, mime: string): Promise<boolean> {
   if (isTauri()) {
@@ -278,8 +280,18 @@ export async function downloadBytes(name: string, bytes: Uint8Array, mime: strin
     await writeFile(path, bytes);
     return true;
   }
-  const blob = new Blob([bytes as BlobPart], { type: mime });
-  const url = URL.createObjectURL(blob);
+  const file = new File([bytes as BlobPart], name, { type: mime });
+  const handheld = window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(display-mode: standalone)").matches;
+  if (handheld && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: name });
+      return true;
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return false;
+      // Share failed for a non-cancel reason: fall through to a plain download.
+    }
+  }
+  const url = URL.createObjectURL(file);
   const a = document.createElement("a");
   a.href = url;
   a.download = name;

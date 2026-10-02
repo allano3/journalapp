@@ -4,7 +4,7 @@ import { journal } from "../../storage/db";
 import { useQuery } from "../../state/hooks";
 import { todayISO } from "../../domain/dates";
 import { downloadBytes, exportJson, exportMarkdownZip } from "../../sync/export";
-import { BACKUP_EXTENSION, createEncryptedBackup, importJson, isJournalEmpty, restoreEncryptedBackup, restoreSqliteFile } from "../../sync/backup";
+import { createEncryptedBackup, importJson, isJournalEmpty, restoreEncryptedBackup, restoreSqliteFile } from "../../sync/backup";
 import { hasDemoData, removeDemoData, seedDemoData } from "../../demo/seed";
 import { Sheet } from "../components/Sheet";
 
@@ -16,6 +16,10 @@ function errorText(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
+/**
+ * `accept` is advisory only; iOS Files greys out extensions it cannot map to a type
+ * (`.journalbackup`), so the restore picker passes "" and the bytes are validated instead.
+ */
 function FilePick({ accept, onFile, children }: { accept: string; onFile: (f: File) => void; children: ReactNode }) {
   return (
     <label className="btn file-pick">
@@ -106,7 +110,7 @@ function RestoreSheet({ onClose, onDone }: { onClose: () => void; onDone: (msg: 
           first if the current writing matters.
         </p>
         <div className="row">
-          <FilePick accept={BACKUP_EXTENSION} onFile={setFile}>
+          <FilePick accept="" onFile={setFile}>
             Choose file
           </FilePick>
           <span className="small muted">{file ? file.name : "No file chosen"}</span>
