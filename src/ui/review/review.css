@@ -1,0 +1,124 @@
+/* Weekly review: a quiet page where the week's material sits above the user's own writing. */
+
+.review-nav {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.review-nav .page-title {
+  margin: 0;
+}
+.review-nav .btn-quiet {
+  font-size: 1rem;
+}
+.review-section {
+  margin-top: 2.5rem;
+}
+.review-section > .label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.review-group + .review-group {
+  margin-top: 1.25rem;
+}
+.review-group .group-title {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+.review-group .aside-item {
+  padding: 0.45rem 0;
+}
+.review-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--journal-font);
+  font-size: 1rem;
+}
+.review-line:last-child {
+  border-bottom: 0;
+}
+.review-line .when {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  min-width: 3.4rem;
+}
+.review-line .what {
+  flex: 1;
+}
+.review-line.is-done .what {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
+}
+.review-line .pill {
+  flex: none;
+}
+
+.review-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.review-prompts button {
+  background: none;
+  border: 0;
+  padding: 0.1rem 0;
+  font-family: var(--font-serif);
+  font-size: 0.98rem;
+  color: var(--text-faint);
+  cursor: pointer;
+  text-align: left;
+}
+.review-prompts button:hover {
+  color: var(--accent-ink);
+}
+.review-editor {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  outline: none;
+  padding: 0.25rem 0;
+  font-family: var(--journal-font);
+  font-size: var(--journal-size);
+  line-height: var(--journal-leading);
+  color: var(--text);
+  min-height: 9rem;
+}
+.review-editor::placeholder {
+  color: var(--text-faint);
+}
+.review-saved {
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  min-height: 1rem;
+}
+
+.review-draft .ai-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.review-draft .ai-foot {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.review-draft .ai-note {
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+.review-past .aside-item-title {
+  font-family: var(--font-serif);
+}

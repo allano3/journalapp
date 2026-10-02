@@ -1,0 +1,426 @@
+/* ------------------------------------------------------------------ */
+/* Markdown editor: writing on paper. No border, no gutter, no chrome. */
+/* ------------------------------------------------------------------ */
+.md-editor {
+  --editor-min-lines: 3;
+  width: 100%;
+}
+.md-editor .cm-editor {
+  background: transparent;
+}
+.md-editor .cm-content {
+  min-height: calc(var(--editor-min-lines) * var(--journal-leading) * var(--journal-size));
+  font-family: var(--journal-font);
+}
+.md-editor .cm-gutters {
+  display: none;
+}
+.md-editor .cm-scroller {
+  overflow: visible;
+}
+
+/* ------------------------------------------------------------------ */
+/* Entry page                                                          */
+/* ------------------------------------------------------------------ */
+.entry-head {
+  margin-bottom: 2rem;
+}
+.entry-date {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.entry-tools {
+  gap: 0.15rem;
+}
+.entry-tools .is-favorite {
+  color: var(--accent);
+}
+.entry-title {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  border-bottom-color: transparent;
+}
+.entry-title:hover,
+.entry-title:focus {
+  border-bottom-color: var(--border);
+}
+.entry-meta {
+  margin-top: 0.4rem;
+  align-items: baseline;
+  gap: 1rem;
+}
+.entry-tags {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  border-bottom-color: transparent;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+}
+.entry-tags:hover,
+.entry-tags:focus {
+  border-bottom-color: var(--border);
+}
+.entry-words {
+  white-space: nowrap;
+}
+.entry-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+.entry-foot {
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-danger-quiet {
+  color: var(--text-faint);
+}
+.btn-danger-quiet:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* Focus mode: the page becomes the paper. */
+.entry-focus {
+  padding-top: 4rem;
+}
+.focus-exit {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+  color: var(--text-faint);
+}
+.focus-exit:hover {
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Sections: understated label, chevron, the writing                    */
+/* ------------------------------------------------------------------ */
+.section {
+  scroll-margin-top: 2rem;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+  margin-left: -1.25rem;
+}
+.section-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.2rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  border-radius: var(--radius);
+}
+.section-toggle:hover .label {
+  color: var(--text-muted);
+}
+.section-chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--text-faint);
+  transition: transform 120ms ease;
+  transform: rotate(90deg);
+}
+.section-collapsed .section-chevron {
+  transform: rotate(0deg);
+}
+.section-prompts-toggle {
+  background: none;
+  border: 0;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.74rem;
+  color: var(--text-faint);
+  cursor: pointer;
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.section:hover .section-prompts-toggle,
+.section:focus-within .section-prompts-toggle,
+.section-prompts-toggle[aria-expanded="true"] {
+  opacity: 1;
+}
+.section-prompts-toggle:hover {
+  color: var(--text-muted);
+}
+.section-collapsed-hint {
+  font-size: 0.72rem;
+}
+.section-body {
+  min-width: 0;
+}
+.section-prompts {
+  list-style: none;
+  margin: 0 0 0.6rem;
+  padding: 0;
+}
+.section-prompt {
+  background: none;
+  border: 0;
+  padding: 0.1rem 0;
+  font-family: var(--journal-font);
+  font-size: calc(var(--journal-size) * 0.92);
+  font-style: italic;
+  color: var(--text-faint);
+  cursor: pointer;
+  text-align: left;
+}
+.section-prompt:hover {
+  color: var(--text-muted);
+}
+
+/* Inline controls never look like forms: one quiet line of text. */
+.section-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+.section-inline-sep {
+  color: var(--text-faint);
+}
+.section-inline .input-quiet {
+  font-size: 0.86rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+.section-inline-fields .input-quiet {
+  width: 14rem;
+  max-width: 45%;
+}
+.input-tiny {
+  width: 3.5rem;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.input-tiny::-webkit-outer-spin-button,
+.input-tiny::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-grow {
+  flex: 1;
+  min-width: 10rem;
+}
+.dots {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background 100ms ease, border-color 100ms ease;
+}
+.dot:hover {
+  border-color: var(--accent);
+}
+.dot-on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.section-after {
+  margin-top: 0.6rem;
+}
+.check-tiny {
+  width: 13px;
+  height: 13px;
+  accent-color: var(--accent);
+  margin: 0;
+}
+.action-done {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+
+/* Prayer items and their quiet status. */
+.prayer-items {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.prayer-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.prayer-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.prayer-answered .prayer-text,
+.prayer-resolved .prayer-text {
+  color: var(--text);
+}
+.prayer-no_longer_relevant .prayer-text {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+.select-tiny {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 0.1rem 0;
+  cursor: pointer;
+}
+.select-tiny:hover,
+.select-tiny:focus {
+  color: var(--text-muted);
+  border-bottom-color: var(--border);
+}
+.section-links {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+.section-links li {
+  padding: 0.2rem 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Today                                                               */
+/* ------------------------------------------------------------------ */
+.today-head {
+  margin-bottom: 2rem;
+}
+.today-date {
+  font-family: var(--font-serif);
+  font-size: 2.1rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.today-primary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.today-preview {
+  position: relative;
+  width: 100%;
+  max-height: calc(6 * var(--journal-leading) * var(--journal-size));
+  overflow: hidden;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding-left: 1rem;
+  border-left: 2px solid var(--border);
+}
+.today-primary a.btn,
+.today-primary a.btn:hover {
+  text-decoration: none;
+}
+.today-preview[data-clipped="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2.5em;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+.today-preview .prose {
+  color: inherit;
+}
+.today-secondary {
+  margin-left: -0.5rem;
+}
+.today-section {
+  margin-top: 3rem;
+}
+.today-section .label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.today-section-note {
+  margin-bottom: 0.5rem;
+}
+.today-carry {
+  margin: 0 0 0.75rem;
+  font-size: var(--journal-size);
+  line-height: var(--journal-leading);
+}
+.today-carry a {
+  color: var(--text);
+}
+.today-welcome {
+  max-width: 34rem;
+}
+.today-welcome-text {
+  font-size: 1.15rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+.today-actions {
+  gap: 0.5rem;
+}
+
+.aside-note {
+  margin-top: 0.4rem;
+}
+.aside-meta div + div {
+  margin-top: 0.2rem;
+}
+
+/* Phone and small tablet: the writing fills the width, labels shrink. */
+@media (max-width: 900px) {
+  .section-head {
+    margin-left: -0.4rem;
+  }
+  .section-head .label {
+    font-size: 0.66rem;
+  }
+  .section-prompts-toggle {
+    opacity: 1;
+  }
+  .entry-body {
+    gap: 1.75rem;
+  }
+  .today-date {
+    font-size: 1.7rem;
+  }
+  .section-inline-fields .input-quiet {
+    max-width: 100%;
+    width: 100%;
+  }
+}

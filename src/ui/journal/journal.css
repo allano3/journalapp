@@ -1,0 +1,286 @@
+/* Journal destination: timeline and calendar. Quiet, mostly whitespace and thin rules. */
+
+.journal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.journal-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding-top: 0.4rem;
+}
+
+/* Segmented view switch: two quiet buttons, the active one underlined in accent. */
+.journal-views {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.25rem;
+}
+.journal-views .btn-quiet {
+  border-radius: 0;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+}
+.journal-views .btn-quiet:hover {
+  background: transparent;
+}
+.journal-views .btn-quiet[aria-current="true"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* Timeline filters */
+.journal-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+.journal-filters .btn-quiet[aria-pressed="true"] {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+.journal-filters .select {
+  margin-left: auto;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.86rem;
+  max-width: 14rem;
+}
+
+/* Month groups */
+.journal-month {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 1.25rem 0 0.35rem;
+  background: var(--bg);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
+}
+.journal-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.45rem;
+}
+.journal-more {
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem 0;
+}
+
+/* Calendar */
+.cal {
+  outline-offset: 6px;
+}
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+.cal-nav h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.25rem;
+  flex: 1;
+}
+.cal-nav .btn-quiet svg {
+  width: 18px;
+  height: 18px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+.cal-dow {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+.cal-day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0.4rem 0.5rem;
+  border: 0;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  text-align: right;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  transition: background 120ms ease;
+}
+.cal-day:hover {
+  background: var(--accent-soft);
+}
+.cal-day.is-empty {
+  cursor: default;
+  background: transparent;
+}
+.cal-day.is-today .cal-num {
+  box-shadow: 0 0 0 1px var(--accent);
+  border-radius: 999px;
+}
+.cal-day.is-selected {
+  background: var(--accent-soft);
+}
+.cal-day.has-entries {
+  color: var(--text);
+}
+.cal-day:not(.has-entries):not(.is-empty) {
+  color: var(--text-muted);
+}
+.cal-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  line-height: 1;
+}
+.cal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  align-self: center;
+  margin-bottom: 0.15rem;
+}
+.cal-dot.is-many {
+  width: 14px;
+  height: 5px;
+}
+
+/* Selected day details */
+.cal-day-detail {
+  margin-top: 1.5rem;
+}
+.cal-day-detail .label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.cal-day-empty {
+  padding: 0.5rem 0;
+}
+
+/* Year strip */
+.cal-year {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+.cal-year-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-right: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.cal-year-label .btn-quiet {
+  padding: 0.1rem 0.2rem;
+}
+.cal-year-label .btn-quiet svg {
+  width: 14px;
+  height: 14px;
+}
+.cal-year-months {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  gap: 0.15rem;
+}
+.cal-year-month {
+  flex: 1;
+  padding: 0.25rem 0;
+  text-align: center;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  cursor: default;
+}
+.cal-year-month.has-entries {
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.cal-year-month.has-entries:hover {
+  color: var(--text);
+}
+.cal-year-month.is-current {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .journal-head {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .journal-head-actions {
+    padding-top: 0;
+  }
+  .journal-filters .select {
+    margin-left: 0;
+    width: 100%;
+  }
+  .cal-nav h2 {
+    font-size: 1.1rem;
+  }
+  .cal-day {
+    padding: 0.25rem 0.3rem;
+    font-size: 0.8rem;
+  }
+  .cal-dow {
+    padding: 0.3rem 0.3rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.02em;
+  }
+  .cal-dot {
+    width: 4px;
+    height: 4px;
+  }
+  .cal-year {
+    font-size: 0.68rem;
+  }
+  .cal-year-months {
+    gap: 0;
+  }
+  .cal-year-month {
+    letter-spacing: 0;
+  }
+}

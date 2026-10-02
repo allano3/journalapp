@@ -1,0 +1,170 @@
+/* Shared by the AI surfaces: Ask, summaries, suggestions, comparisons, settings. */
+
+.ai-block .cite-unresolved {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  color: var(--text-faint);
+}
+.ai-block a.cite-more {
+  font-size: 0.7em;
+  padding: 0 0.25em;
+  margin-left: -0.05em;
+  color: var(--text-muted);
+}
+.ai-block .ai-error {
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+.ai-block .ai-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.ai-block details.ai-sources {
+  margin-top: 0.75rem;
+  border-top: 1px dashed var(--border);
+  padding-top: 0.5rem;
+}
+.ai-block details.ai-sources summary {
+  cursor: pointer;
+  list-style: none;
+}
+.ai-block details.ai-sources summary::-webkit-details-marker {
+  display: none;
+}
+.ai-block details.ai-sources summary::after {
+  content: " ›";
+}
+.ai-block details.ai-sources[open] summary::after {
+  content: " ⌄";
+}
+.ai-block .ai-pending {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Inline (non-page) AI affordances in asides and detail pages. */
+.ai-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.ai-inline .ai-note {
+  color: var(--danger);
+  font-size: 0.86rem;
+}
+.ai-inline .ai-quote {
+  font-family: var(--journal-font);
+  color: var(--text-muted);
+  border-left: 2px solid var(--border);
+  padding-left: 0.6rem;
+  margin: 0.4rem 0;
+  font-size: 0.95em;
+}
+.ai-inline .ai-statement {
+  font-family: var(--journal-font);
+  font-size: 1.02em;
+  margin: 0.35rem 0;
+}
+
+/* Ask my journal */
+.ask-page .page-sub {
+  max-width: 36rem;
+}
+.ask-examples {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0 0 2rem;
+}
+.ask-examples button {
+  background: none;
+  border: 0;
+  padding: 0.1rem 0;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+.ask-examples button:hover {
+  color: var(--accent-ink);
+}
+.ask-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.ask-user {
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  line-height: 1.5;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.ask-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.ask-form .textarea {
+  flex: 1;
+  min-height: 3.2rem;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  resize: none;
+}
+.ask-form .btn {
+  flex: none;
+}
+
+/* AI settings */
+.ai-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.ai-settings .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.ai-settings .field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 600px) {
+  .ai-settings .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+.ai-settings .toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+.ai-settings .toggle input {
+  accent-color: var(--accent);
+}
+.ai-settings .status-line {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.ai-settings .status-line.is-error {
+  color: var(--danger);
+}
+.ai-settings .status-line.is-ok {
+  color: #4f6b4a;
+}
+.ai-settings .privacy-note {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-left: 2px solid var(--border);
+  padding-left: 0.75rem;
+}
