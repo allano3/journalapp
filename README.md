@@ -47,10 +47,6 @@ Open that URL on the phone and choose **Add to Home Screen** (iOS Safari: Share 
 Add to Home Screen; Android Chrome: menu → Install app). Only the app's own files are
 served from GitHub; journal text never goes there. To host elsewhere, serve `dist/`
 from any HTTPS origin and set `VITE_BASE` to the path it lives under.
-   Tailscale + Caddy, GitHub Pages — anything). Only the app's own files are served;
-   journal text never goes to that host.
-3. Open the URL on the phone and choose **Add to Home Screen** (iOS Safari: Share →
-   Add to Home Screen; Android Chrome: menu → Install app).
 
 Storage in this mode is the same IndexedDB backend as the browser (see the table
 below). Three things to know:
