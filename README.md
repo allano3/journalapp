@@ -38,8 +38,15 @@ The production build is an installable, offline-capable web app: `npm run build`
 emits a manifest and a service worker that precaches the app shell and the SQLite
 engine, so once installed it opens with no network at all.
 
-1. Build: `npm run build`.
-2. Serve the `dist/` folder from any static host over **HTTPS** (a tiny VPS, a NAS,
+The repository deploys itself to GitHub Pages on every push to `main`
+(`.github/workflows/pages.yml`, which builds with `VITE_BASE=/journalapp/`):
+
+**https://allano3.github.io/journalapp/**
+
+Open that URL on the phone and choose **Add to Home Screen** (iOS Safari: Share →
+Add to Home Screen; Android Chrome: menu → Install app). Only the app's own files are
+served from GitHub; journal text never goes there. To host elsewhere, serve `dist/`
+from any HTTPS origin and set `VITE_BASE` to the path it lives under.
    Tailscale + Caddy, GitHub Pages — anything). Only the app's own files are served;
    journal text never goes to that host.
 3. Open the URL on the phone and choose **Add to Home Screen** (iOS Safari: Share →
