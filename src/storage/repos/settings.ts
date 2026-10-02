@@ -60,6 +60,7 @@ export class SettingsRepo {
 
   setFlag(key: string, value: unknown): void {
     this.db.run("INSERT OR REPLACE INTO settings(key, value) VALUES (?, ?)", [`flag:${key}`, JSON.stringify(value)]);
+    changes.emit("settings");
   }
 
   invalidate(): void {

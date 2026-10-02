@@ -6,7 +6,7 @@ import { Sheet } from "../components/Sheet";
 
 const MIN_PASSCODE = 4;
 
-function PasscodeForm({
+export function PasscodeForm({
   requireCurrent,
   onDone,
 }: {

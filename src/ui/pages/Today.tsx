@@ -6,6 +6,7 @@ import { markdownToPlain, truncate } from "../../domain/text";
 import { journal } from "../../storage/db";
 import { useQuery, useSettings } from "../../state/hooks";
 import { seedDemoData } from "../../demo/seed";
+import { LockPrompt } from "../security/LockPrompt";
 import { MarkdownView } from "../components/MarkdownView";
 import { QuickNoteButton } from "../editor/QuickNoteButton";
 import "../editor/editor.css";
@@ -81,6 +82,7 @@ function EmptyJournal() {
           Explore with demo entries
         </button>
       </div>
+      <LockPrompt />
     </div>
   );
 }
@@ -191,6 +193,7 @@ export function TodayPage() {
               ))}
             </section>
           )}
+          <LockPrompt />
         </>
       )}
     </div>
