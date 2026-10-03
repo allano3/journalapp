@@ -101,3 +101,11 @@ export function journal(): Journal {
   if (!instance) throw new Error("journal not opened");
   return instance;
 }
+
+/**
+ * Write any pending changes to disk if the journal is open. Safe to call before the
+ * page goes away (service-worker update, unload) when no database may exist yet.
+ */
+export async function flushPending(): Promise<void> {
+  await instance?.db.flush();
+}

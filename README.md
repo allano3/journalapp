@@ -48,6 +48,15 @@ Add to Home Screen; Android Chrome: menu → Install app). Only the app's own fi
 served from GitHub; journal text never goes there. To host elsewhere, serve `dist/`
 from any HTTPS origin and set `VITE_BASE` to the path it lives under.
 
+### Updates
+
+An installed app updates itself. The service worker re-checks for a new build when the
+app returns to the foreground and hourly while it is open; a new version downloads in
+the background and is applied on the next launch. If the app is open when the update
+lands it reloads itself, but never while you are writing — the reload waits until the
+editor loses focus and pending writes are flushed first. Nothing is lost either way:
+entries live in IndexedDB, not in the page.
+
 Storage in this mode is the same IndexedDB backend as the browser (see the table
 below). Three things to know:
 
