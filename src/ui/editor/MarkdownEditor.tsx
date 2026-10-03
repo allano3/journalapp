@@ -151,6 +151,18 @@ const journalKeymap = keymap.of([
   ...defaultKeymap,
 ]);
 
+/**
+ * CodeMirror disables the platform's writing aids by default
+ * (`autocorrect="off" spellcheck="false" autocapitalize="off"`). For prose journalling —
+ * especially on a phone keyboard — they are wanted, so they are turned back on here.
+ */
+const nativeWritingAids = EditorView.contentAttributes.of({
+  autocorrect: "on",
+  autocapitalize: "sentences",
+  spellcheck: "true",
+  enterkeyhint: "enter",
+});
+
 const staticExtensions = [
   history(),
   drawSelection(),
@@ -158,6 +170,7 @@ const staticExtensions = [
   markdown({ base: markdownLanguage, addKeymap: false, completeHTMLTags: false }),
   syntaxHighlighting(journalHighlight),
   paperTheme,
+  nativeWritingAids,
   journalKeymap,
 ];
 

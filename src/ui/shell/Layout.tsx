@@ -40,6 +40,46 @@ function useIndexSync(): void {
   }, [settings.ai.enabled, settings.ai.embeddingModel, settings.ai.ollamaUrl]);
 }
 
+/**
+ * While the user is typing, mark the document so the fixed bottom navigation can get out
+ * of the way. On phones the software keyboard shrinks the visual viewport but not the
+ * layout viewport, so a `position: fixed; bottom: 0` bar is painted directly over the
+ * line being written. Hiding it during input — and nudging the caret back into the
+ * visible area when the keyboard appears — keeps the writing visible.
+ */
+function useTypingChrome(): void {
+  useEffect(() => {
+    const root = document.documentElement;
+    const isWriting = (el: EventTarget | null): boolean =>
+      el instanceof HTMLElement && (el.isContentEditable || el instanceof HTMLTextAreaElement || (el instanceof HTMLInputElement && el.type !== "checkbox" && el.type !== "radio"));
+
+    const onFocusIn = (e: FocusEvent) => {
+      if (isWriting(e.target)) root.dataset.typing = "true";
+    };
+    const onFocusOut = () => {
+      // A click that moves focus between two editors fires focusout before focusin.
+      queueMicrotask(() => {
+        if (!isWriting(document.activeElement)) delete root.dataset.typing;
+      });
+    };
+    const onViewportResize = () => {
+      if (root.dataset.typing !== "true") return;
+      const el = document.activeElement;
+      if (el instanceof HTMLElement) el.scrollIntoView({ block: "nearest" });
+    };
+
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    window.visualViewport?.addEventListener("resize", onViewportResize);
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+      window.visualViewport?.removeEventListener("resize", onViewportResize);
+      delete root.dataset.typing;
+    };
+  }, []);
+}
+
 function RecentDates() {
   const today = todayISO();
   const recent = useQuery((j) => j.entries.list({ kind: "daily", limit: 10 }), [], ["entries"]);
@@ -59,6 +99,7 @@ function RecentDates() {
 export function Layout() {
   useThemeAttributes();
   useIndexSync();
+  useTypingChrome();
   const { aside, focus } = useShell();
   const [settings] = useSettings();
 

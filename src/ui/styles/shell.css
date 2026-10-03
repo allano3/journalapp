@@ -189,6 +189,13 @@
     padding-bottom: env(safe-area-inset-bottom);
     z-index: 20;
   }
+  /* Software keyboard open: the fixed bar would sit on top of the line being written. */
+  :root[data-typing="true"] .tabbar {
+    display: none;
+  }
+  :root[data-typing="true"] .main {
+    padding-bottom: 0;
+  }
   .tabbar a {
     display: flex;
     flex-direction: column;
