@@ -63,9 +63,10 @@ function useTypingChrome(): void {
       });
     };
     const onViewportResize = () => {
-      if (root.dataset.typing !== "true") return;
+      // The editor keeps its own caret visible (it knows where the caret is); this only
+      // handles plain inputs, whose own box is what needs to clear the keyboard.
       const el = document.activeElement;
-      if (el instanceof HTMLElement) el.scrollIntoView({ block: "nearest" });
+      if (el instanceof HTMLElement && !el.isContentEditable && isWriting(el)) el.scrollIntoView({ block: "center" });
     };
 
     document.addEventListener("focusin", onFocusIn);

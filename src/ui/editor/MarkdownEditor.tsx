@@ -174,6 +174,31 @@ const staticExtensions = [
   journalKeymap,
 ];
 
+/**
+ * Height to keep clear below the caret. The software keyboard is excluded from
+ * `visualViewport`, but iOS draws its form assistant (the floating "‹ › ✓" pill) *over*
+ * the page without shrinking the viewport, so that band has to be reserved by hand.
+ */
+const CARET_CLEARANCE = 76;
+const CARET_HEADROOM = 24;
+
+/**
+ * Scroll the page so the caret stays inside the part of the screen the keyboard and its
+ * accessory bar leave visible. CodeMirror's own `scrollIntoView` only knows the layout
+ * viewport, which does not change when the keyboard opens, so it considers a caret
+ * hidden behind the keyboard to be perfectly visible.
+ */
+function keepCaretVisible(view: EditorView): void {
+  if (!view.hasFocus) return;
+  const caret = view.coordsAtPos(view.state.selection.main.head);
+  if (!caret) return;
+  const vv = window.visualViewport;
+  const top = (vv?.offsetTop ?? 0) + CARET_HEADROOM;
+  const bottom = (vv?.offsetTop ?? 0) + (vv?.height ?? window.innerHeight) - CARET_CLEARANCE;
+  const delta = caret.bottom > bottom ? caret.bottom - bottom : caret.top < top ? caret.top - top : 0;
+  if (delta !== 0) window.scrollBy({ top: delta, behavior: "auto" });
+}
+
 export function MarkdownEditor({ value, onChange, placeholder, autoFocus = false, minLines = 3, id }: MarkdownEditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
@@ -185,6 +210,7 @@ export function MarkdownEditor({ value, onChange, placeholder, autoFocus = false
     const parent = host.current;
     if (!parent) return;
     const listener = EditorView.updateListener.of((u) => {
+      if (u.docChanged || u.selectionSet) requestAnimationFrame(() => keepCaretVisible(u.view));
       if (!u.docChanged) return;
       const next = u.state.doc.toString();
       valueRef.current = next;
@@ -196,7 +222,13 @@ export function MarkdownEditor({ value, onChange, placeholder, autoFocus = false
     });
     view.current = v;
     if (autoFocus) v.focus();
+    // The keyboard opening or closing resizes the visual viewport without moving the page.
+    const onViewport = () => keepCaretVisible(v);
+    window.visualViewport?.addEventListener("resize", onViewport);
+    window.visualViewport?.addEventListener("scroll", onViewport);
     return () => {
+      window.visualViewport?.removeEventListener("resize", onViewport);
+      window.visualViewport?.removeEventListener("scroll", onViewport);
       v.destroy();
       view.current = null;
     };
