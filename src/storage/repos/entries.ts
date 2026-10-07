@@ -157,7 +157,7 @@ export class EntriesRepo {
     const meta = metadata === undefined ? existing.metadata : JSON.stringify(metadata);
     if (existing.content === content && existing.metadata === meta) return;
     this.db.transaction(() => {
-      this.db.run("UPDATE blocks SET content = ?, metadata = ? WHERE id = ?", [content, meta, blockId]);
+      this.db.run("UPDATE blocks SET content = ?, metadata = ?, updated_at = ? WHERE id = ?", [content, meta, nowIso(), blockId]);
       this.db.run("UPDATE entries SET updated_at = ? WHERE id = ?", [nowIso(), existing.entry_id]);
     });
     changes.emit("entries");
@@ -169,13 +169,14 @@ export class EntriesRepo {
       block.position ??
       ((this.db.get<{ m: number | null }>("SELECT MAX(position) m FROM blocks WHERE entry_id = ?", [entryId])?.m ?? -1) + 1);
     this.db.transaction(() => {
-      this.db.run("INSERT INTO blocks(id, entry_id, type, content, position, metadata) VALUES (?,?,?,?,?,?)", [
+      this.db.run("INSERT INTO blocks(id, entry_id, type, content, position, metadata, updated_at) VALUES (?,?,?,?,?,?,?)", [
         id,
         entryId,
         block.type,
         block.content,
         pos,
         JSON.stringify(block.metadata ?? {}),
+        nowIso(),
       ]);
       this.db.run("UPDATE entries SET updated_at = ? WHERE id = ?", [nowIso(), entryId]);
     });
@@ -203,26 +204,29 @@ export class EntriesRepo {
         this.db.run("DELETE FROM embeddings WHERE owner_type = 'block' AND owner_id = ?", [id]);
       }
     }
+    const ts = nowIso();
     blocks.forEach((b, i) => {
       const id = b.id ?? newId();
       const meta = JSON.stringify(b.metadata ?? {});
       const pos = b.position ?? i;
       if (existing.includes(id)) {
-        this.db.run("UPDATE blocks SET type = ?, content = ?, position = ?, metadata = ? WHERE id = ?", [
+        this.db.run("UPDATE blocks SET type = ?, content = ?, position = ?, metadata = ?, updated_at = ? WHERE id = ?", [
           b.type,
           b.content,
           pos,
           meta,
+          ts,
           id,
         ]);
       } else {
-        this.db.run("INSERT INTO blocks(id, entry_id, type, content, position, metadata) VALUES (?,?,?,?,?,?)", [
+        this.db.run("INSERT INTO blocks(id, entry_id, type, content, position, metadata, updated_at) VALUES (?,?,?,?,?,?,?)", [
           id,
           entryId,
           b.type,
           b.content,
           pos,
           meta,
+          ts,
         ]);
       }
     });

@@ -50,7 +50,7 @@ Rules:
 
 - `entries(id, entry_date, created_at, updated_at, title, favorite, source_device, kind)`
   `kind` = `daily` | `note` (quick notes bypass the template).
-- `blocks(id, entry_id, type, content, position, metadata)` — markdown content; `metadata`
+- `blocks(id, entry_id, type, content, position, metadata, updated_at)` — markdown content; `metadata`
   JSON holds structured extras (sleep quality/hours, reading source/chapter, prayer item
   states, the template section key).
 - `tags(id, name)` + `entry_tags`.
@@ -92,6 +92,16 @@ delete-all, passcode lock, responsive layout, dark mode, demo data.
 embedding index with cosine similarity, semantic search, Ask My Journal with dated
 citations, AI weekly draft, "you previously wrote something different" comparison.
 All optional; all degrade to keyword behaviour.
+
+**Merging two devices (`src/sync/merge.ts`):** a backup can be merged instead of
+replacing, because every row has a unique sortable id and its own `updated_at` and
+conviction history is append-only. Entries and blocks take the later write; a differing
+block is only treated as a *conflict* when both sides edited it since the two journals
+last agreed (a per-peer watermark kept in local settings, set by a replace-restore and by
+each merge), and then the losing text is kept beside the winner as a labelled block
+rather than discarded. Reviews keep the newer text and carry the other below it;
+tombstones delete rows that have not been edited since. Device-local tables (settings,
+embeddings, AI artifacts) are not merged.
 
 **Later:** encrypted multi-device sync (see `src/sync/README.md`), handwritten page
 attachments + local OCR, platform biometrics, native notifications for review dates.

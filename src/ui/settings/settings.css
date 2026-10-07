@@ -190,3 +190,16 @@
     margin-bottom: 0.5rem;
   }
 }
+
+/* Restore sheet: mode choice and the dry-run preview. */
+.restore-modes {
+  gap: 0.35rem;
+}
+.restore-preview {
+  border-left: 2px solid var(--border-strong);
+  padding: 0.1rem 0 0.1rem 0.75rem;
+}
+.restore-preview ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}

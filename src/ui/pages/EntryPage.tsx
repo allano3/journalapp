@@ -88,12 +88,15 @@ function DailySections({ entry, template, autoFocus }: { entry: Entry; template:
       {orphans.map((block) => {
         const key = typeof block.metadata.section === "string" ? block.metadata.section : block.type;
         const section = template.find((s) => s.key === key);
+        // A block kept aside by a merge says where it came from instead of its type.
+        const conflictFrom = typeof block.metadata.conflictFrom === "string" ? block.metadata.conflictFrom : null;
+        const conflictDate = typeof block.metadata.conflictDate === "string" ? block.metadata.conflictDate : "";
         return (
           <SectionEditor
             key={block.id}
             entryId={entry.id}
             sectionKey={key}
-            label={section?.label ?? BLOCK_TYPE_LABELS[block.type]}
+            label={conflictFrom ? `Also written on ${conflictFrom}${conflictDate ? ` · ${formatMedium(conflictDate)}` : ""}` : (section?.label ?? BLOCK_TYPE_LABELS[block.type])}
             blockType={block.type}
             prompt={section?.prompt ?? ""}
             secondaryPrompts={section?.secondaryPrompts ?? []}

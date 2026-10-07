@@ -163,6 +163,15 @@ const MIGRATIONS: { version: number; sql: string }[] = [
       );
     `,
   },
+  {
+    // Per-block timestamps: a merge needs to tell "the other device never touched this
+    // section" from "both devices edited it", which entry-level times cannot express.
+    version: 2,
+    sql: `
+      ALTER TABLE blocks ADD COLUMN updated_at TEXT NOT NULL DEFAULT '';
+      UPDATE blocks SET updated_at = (SELECT e.updated_at FROM entries e WHERE e.id = blocks.entry_id);
+    `,
+  },
 ];
 
 export function migrate(db: SqlDriver): void {

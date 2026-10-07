@@ -4,7 +4,8 @@ import { journal } from "../../storage/db";
 import { useQuery } from "../../state/hooks";
 import { todayISO } from "../../domain/dates";
 import { downloadBytes, exportJson, exportMarkdownZip } from "../../sync/export";
-import { createEncryptedBackup, importJson, isJournalEmpty, restoreEncryptedBackup, restoreSqliteFile } from "../../sync/backup";
+import { createEncryptedBackup, importJson, isJournalEmpty, mergeEncryptedBackup, restoreEncryptedBackup, restoreSqliteFile } from "../../sync/backup";
+import { describeMerge, type MergeSummary } from "../../sync/merge";
 import { hasDemoData, removeDemoData, seedDemoData } from "../../demo/seed";
 import { Sheet } from "../components/Sheet";
 
@@ -81,19 +82,44 @@ function BackupSheet({ onClose, onDone }: { onClose: () => void; onDone: (msg: s
   );
 }
 
+type RestoreMode = "merge" | "replace";
+
 function RestoreSheet({ onClose, onDone }: { onClose: () => void; onDone: (msg: string) => void }) {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [pass, setPass] = useState("");
+  const [mode, setMode] = useState<RestoreMode>("merge");
+  const [preview, setPreview] = useState<MergeSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const reset = () => {
+    setPreview(null);
+    setError(null);
+  };
+
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!file) return setError("Choose a backup file first.");
     setBusy(true);
+    setError(null);
     try {
-      await restoreEncryptedBackup(journal(), new Uint8Array(await file.arrayBuffer()), pass);
-      onDone(`Restored from ${file.name}.`);
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (mode === "replace") {
+        await restoreEncryptedBackup(journal(), bytes, pass);
+        onDone(`Restored from ${file.name}.`);
+        onClose();
+        navigate("/");
+        return;
+      }
+      // First press reports what the merge would do; second press commits it.
+      if (!preview) {
+        setPreview(await mergeEncryptedBackup(journal(), bytes, pass, { dryRun: true }));
+        return;
+      }
+      const summary = await mergeEncryptedBackup(journal(), bytes, pass);
+      const changed = describeMerge(summary);
+      onDone(changed.length > 0 ? `Merged ${file.name}: ${changed.join(", ")}.` : `${file.name} held nothing this journal was missing.`);
       onClose();
       navigate("/");
     } catch (err) {
@@ -102,24 +128,51 @@ function RestoreSheet({ onClose, onDone }: { onClose: () => void; onDone: (msg: 
       setBusy(false);
     }
   }
+
+  const changes = preview ? describeMerge(preview) : [];
   return (
     <Sheet title="Restore backup" onClose={onClose}>
       <form className="stack" onSubmit={submit}>
+        <div className="row restore-modes">
+          <button type="button" className={`btn btn-sm ${mode === "merge" ? "btn-primary" : "btn-quiet"}`} onClick={() => { setMode("merge"); reset(); }}>
+            Merge
+          </button>
+          <button type="button" className={`btn btn-sm ${mode === "replace" ? "btn-primary" : "btn-quiet"}`} onClick={() => { setMode("replace"); reset(); }}>
+            Replace
+          </button>
+        </div>
         <p className="muted small">
-          Restoring replaces everything currently in this journal with the contents of the backup. This cannot be undone; export or back up
-          first if the current writing matters.
+          {mode === "merge"
+            ? "Combines the backup with what is already here. Entries and convictions missing from this device are added, newer writing wins, and if the same section was edited on both devices the other version is kept beside it rather than lost."
+            : "Replaces everything currently in this journal with the contents of the backup. This cannot be undone; export or back up first if the current writing matters."}
         </p>
         <div className="row">
-          <FilePick accept="" onFile={setFile}>
+          <FilePick accept="" onFile={(f) => { setFile(f); reset(); }}>
             Choose file
           </FilePick>
           <span className="small muted">{file ? file.name : "No file chosen"}</span>
         </div>
-        <input className="input" type="password" autoComplete="off" placeholder="Backup passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
+        <input className="input" type="password" autoComplete="off" placeholder="Backup passphrase" value={pass} onChange={(e) => { setPass(e.target.value); reset(); }} />
+        {preview && (
+          <div className="small muted restore-preview">
+            {changes.length > 0 ? (
+              <>
+                <div>From {preview.fromDevice}, this would add:</div>
+                <ul>
+                  {changes.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <div>This backup holds nothing your journal is missing. Merging would change nothing.</div>
+            )}
+          </div>
+        )}
         {error && <div className="small settings-error">{error}</div>}
         <div className="row">
-          <button className="btn btn-danger" type="submit" disabled={busy || !file || pass.length === 0}>
-            {busy ? "Restoring…" : "Replace journal with backup"}
+          <button className={`btn ${mode === "replace" ? "btn-danger" : "btn-primary"}`} type="submit" disabled={busy || !file || pass.length === 0}>
+            {busy ? "Working…" : mode === "replace" ? "Replace journal with backup" : preview ? "Merge into this journal" : "Preview merge"}
           </button>
           <button className="btn btn-quiet" type="button" onClick={onClose}>
             Cancel

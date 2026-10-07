@@ -61,7 +61,10 @@ Storage in this mode is the same IndexedDB backend as the browser (see the table
 below). Three things to know:
 
 - **Moving the journal between phone and desktop:** Settings → *Create backup* on the
-  source device, then *Restore backup* on the other. On a phone the backup opens the
+  source device, then *Restore backup* on the other. Restore offers **Merge** (default —
+  combines the backup with what is already here, so writing done on both devices
+  survives) or **Replace** (the backup becomes the whole journal). Merge shows what it
+  would change before you commit, and running it twice changes nothing the second time. On a phone the backup opens the
   system share sheet, so AirDrop (or Files, Mail, etc.) is one tap; on a desktop it is a
   normal download that you can AirDrop from the Downloads folder. The file is encrypted
   with your passphrase, so the transfer channel does not matter.

@@ -5,6 +5,7 @@ import { newId } from "../domain/ids";
 import { decrypt, encrypt } from "../security/crypto";
 import { changes } from "../state/events";
 import type { JournalExport } from "./export";
+import { mergeDatabase, recordAgreement, type MergeSummary } from "./merge";
 
 /**
  * Encrypted backup = the raw SQLite file (so FTS tables, embeddings and settings restore
@@ -30,6 +31,38 @@ export async function restoreEncryptedBackup(j: Journal, file: Uint8Array, passp
   const bytes = await decrypt(file, passphrase);
   if (!isSqliteFile(bytes)) throw new Error("the backup decrypted but does not contain a journal database");
   await j.replaceDatabase(bytes);
+  noteRestoredAgreement(j);
+}
+
+/**
+ * After a replace-restore both devices hold the same text, so a later merge of writing
+ * from the device that made the backup must not read untouched sections as conflicts.
+ * The peer's name comes from the restored rows themselves: the settings cache may still
+ * describe the journal that was just replaced.
+ */
+function noteRestoredAgreement(j: Journal): void {
+  const row = j.db.get<{ value: string }>("SELECT value FROM settings WHERE key = 'deviceName'");
+  let device = "another device";
+  if (row) {
+    try {
+      const parsed = JSON.parse(row.value) as unknown;
+      if (typeof parsed === "string" && parsed.trim().length > 0) device = parsed.trim();
+    } catch {
+      // A malformed value just means the peer stays anonymous.
+    }
+  }
+  const high = j.db.get<{ t: string | null }>("SELECT MAX(updated_at) t FROM blocks")?.t ?? "";
+  recordAgreement(j, device, high);
+}
+
+/**
+ * Combine a backup with what is already here instead of replacing it. Returns what the
+ * merge did (or would do, with `dryRun`) so the user can confirm before committing.
+ */
+export async function mergeEncryptedBackup(j: Journal, file: Uint8Array, passphrase: string, opts: { dryRun?: boolean } = {}): Promise<MergeSummary> {
+  const bytes = await decrypt(file, passphrase);
+  if (!isSqliteFile(bytes)) throw new Error("the backup decrypted but does not contain a journal database");
+  return mergeDatabase(j, bytes, opts);
 }
 
 /** A plain `.sqlite` file the user chose (e.g. copied out of the app data folder). */

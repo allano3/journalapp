@@ -58,6 +58,12 @@ function uniquePath(taken: Record<string, true>, base: string, ext: string): str
 }
 
 function sectionLabel(block: Block, settings: Settings): string {
+  // A block a merge kept aside is named after the device it came from.
+  const from = block.metadata.conflictFrom;
+  if (typeof from === "string" && from.length > 0) {
+    const when = typeof block.metadata.conflictDate === "string" ? ` (${block.metadata.conflictDate})` : "";
+    return `Also written on ${from}${when}`;
+  }
   const key = block.metadata.section;
   if (typeof key === "string") {
     const section = settings.template.find((s) => s.key === key);

@@ -30,18 +30,37 @@ export class SqliteDriver implements SqlDriver {
     return new SqliteDriver(sqlite3, store, bytes);
   }
 
-  private deserialize(bytes: Uint8Array): void {
+  private deserialize(bytes: Uint8Array, schema = "main"): void {
     const { capi, wasm } = this.sqlite3;
     const p = wasm.allocFromTypedArray(bytes);
     const rc = capi.sqlite3_deserialize(
       this.db.pointer!,
-      "main",
+      schema,
       p,
       bytes.length,
       bytes.length,
       capi.SQLITE_DESERIALIZE_FREEONCLOSE | capi.SQLITE_DESERIALIZE_RESIZEABLE,
     );
     if (rc !== 0) throw new Error(`sqlite3_deserialize failed: ${rc}`);
+  }
+
+  /**
+   * Load another journal file alongside this one so both can be queried in a single
+   * statement (used by merge). The schema is an empty in-memory database that the
+   * backup's bytes are deserialized into.
+   */
+  attachBytes(schema: string, bytes: Uint8Array): void {
+    this.db.exec(`ATTACH ':memory:' AS ${schema}`);
+    try {
+      this.deserialize(bytes, schema);
+    } catch (e) {
+      this.db.exec(`DETACH ${schema}`);
+      throw e;
+    }
+  }
+
+  detach(schema: string): void {
+    this.db.exec(`DETACH ${schema}`);
   }
 
   run(sql: string, params: SqlParams = []): void {

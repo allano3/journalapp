@@ -15,6 +15,9 @@ export interface SqlDriver {
   export(): Uint8Array;
   /** Replace the whole database with the given SQLite file bytes. */
   import(bytes: Uint8Array): void;
+  /** Attach `bytes` (a SQLite file) under `schema`, for cross-database queries. */
+  attachBytes(schema: string, bytes: Uint8Array): void;
+  detach(schema: string): void;
   /** Flush pending persistence immediately. */
   flush(): Promise<void>;
   /** Called after every write; the driver persists on a debounce. */
